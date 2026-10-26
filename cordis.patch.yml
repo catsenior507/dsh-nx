@@ -1,0 +1,24 @@
+# dsh-nx bundle patch.
+#
+# Inserts the host half: one `nx` tool that turns the NX / nx-auto-mcp startup
+# chain into something the agent can inspect and repair instead of guessing at.
+#
+# Install with: dsh plugin --profile <name> add D:/deepseek_harness/dsh-nx
+#
+# Config (all optional):
+#   nxRoot            - NX install root (…\Siemens\NX2412). Falls back to
+#                       UGII_BASE_DIR, then to an NX* scan of Program Files.
+#   nxAutoMcpPath     - checkout of nx-auto-mcp. Needed by deploy, and the source
+#                       of custom_dirs.dat / UGII_USER_DIR for launch.
+#   customDirsFile    - explicit custom_dirs.dat; default <nxAutoMcpPath>/custom_dirs.dat
+#   userDir           - explicit UGII_USER_DIR; default <nxAutoMcpPath>
+#   exePath           - explicit ugraf.exe; default <nxRoot>/NXBIN/ugraf.exe
+#   host / port       - plugin TCP endpoint (default 127.0.0.1:1977)
+#   windowTitle       - window title fragment used by focus (default "NX - Gateway")
+#   callTimeoutMs     - per tool call over TCP (default 180000)
+#   launchTimeoutMs   - how long launch waits for the port (default 240000)
+#   deployExecTimeoutMs - csc / SignDotNet wall clock (default 300000)
+#   exposeTool        - register the nx tool (default true)
+- insert:
+    - id: tool-nx
+      name: '@dsh-external/dsh-nx'

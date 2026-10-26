@@ -1,0 +1,47 @@
+{
+  "name": "@dsh-external/dsh-nx",
+  "version": "0.1.0",
+  "description": "Siemens NX + nx-auto-mcp adapter for DeepSeek Harness: the health chain, direct TCP tool calls, NX launch, window focus, screenshots and plugin deploy, as one tool.",
+  "private": false,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "cordis-plugin",
+    "siemens-nx",
+    "nx",
+    "ug",
+    "nxopen",
+    "nx-auto-mcp",
+    "mcp",
+    "cad",
+    "automation"
+  ],
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ]
+}

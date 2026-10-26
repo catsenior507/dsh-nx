@@ -19,6 +19,7 @@ import { findNxRoot, resolveConfig } from '../lib/config.js'
 import { callTool, listTools, ping, unwrap } from '../lib/tcp.js'
 import { buildPlan, collectSources } from '../lib/deploy.js'
 import { parseParams, registerTool, render } from '../lib/tool.js'
+import { pickWindow } from '../lib/win.js'
 
 /** Write a throwaway tree, returning its root. */
 function tempTree(files) {
@@ -223,3 +224,38 @@ test(
     }
   },
 )
+
+test('pickWindow never invents an NX window', () => {
+  const win = (title, pid, visible = true) => ({ handle: '1', pid, title, visible, iconic: false })
+  const windows = [
+    win('NX - Gateway', 100),
+    win('UG 插件 nx-auto-mcp 调研 — DeepSeek Harness', 200),
+    win('NX', 300),
+  ]
+
+  assert.equal(pickWindow(windows, { pids: [100], titleFragment: 'NX - Gateway' }).title, 'NX - Gateway')
+  assert.equal(
+    pickWindow(windows, { pids: [300], titleFragment: 'NX - Gateway' }).title,
+    'NX',
+    'process ownership outranks the title: NX is titled "NX" at the gateway',
+  )
+  assert.equal(
+    pickWindow(windows, { pids: [999], titleFragment: 'NX - Gateway' }),
+    null,
+    'a pid that owns nothing must not fall back to some other window',
+  )
+  assert.equal(
+    pickWindow(windows, { pids: [], titleFragment: 'Siemens' }),
+    null,
+    'without a pid the title is the only evidence, so a non-match is not a candidate',
+  )
+  assert.equal(pickWindow(windows, { pids: [], titleFragment: 'deepseek harness' }).pid, 200, 'title matching is case-insensitive')
+  assert.equal(pickWindow([], { pids: [], titleFragment: 'NX' }), null)
+  assert.equal(pickWindow([{ pid: 1, title: '   ', visible: true }], { pids: [1] }), null, 'untitled windows are not candidates')
+})
+
+test('pickWindow prefers a visible window of the same process', () => {
+  const hidden = { handle: '1', pid: 7, title: 'NX hidden helper', visible: false, iconic: false }
+  const shown = { handle: '2', pid: 7, title: 'NX', visible: true, iconic: false }
+  assert.equal(pickWindow([hidden, shown], { pids: [7] }).handle, '2')
+})
